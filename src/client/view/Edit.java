@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import model.Student;
 
@@ -25,18 +26,19 @@ public class Edit extends javax.swing.JFrame implements ActionListener {
      */
     private Main main;
     private Student student;
+
     public Edit(Student student, Main main) {
         initComponents();
         this.main = main;
         btnEdit.addActionListener(this);
+        btnDelete.addActionListener(this);
+
         this.student = student;
         txtMa.setText(String.valueOf(student.getMa()));
         txtTen.setText(student.getTen());
         txtKhoa.setText(student.getKhoa());
         txtNgaysinh.setText(student.getNgaysinh());
         txtQuequan.setText(student.getQuequan());
-    
-        
     }
 
     /**
@@ -60,6 +62,7 @@ public class Edit extends javax.swing.JFrame implements ActionListener {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         btnEdit = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -78,6 +81,8 @@ public class Edit extends javax.swing.JFrame implements ActionListener {
         jLabel6.setText("ma");
 
         btnEdit.setText("Edit");
+
+        btnDelete.setText("Delete");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -110,10 +115,12 @@ public class Edit extends javax.swing.JFrame implements ActionListener {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txtQuequan, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(56, 119, Short.MAX_VALUE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(193, 193, 193)
                 .addComponent(btnEdit)
-                .addGap(261, 261, 261))
+                .addGap(69, 69, 69)
+                .addComponent(btnDelete)
+                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(95, 95, 95)
@@ -123,7 +130,7 @@ public class Edit extends javax.swing.JFrame implements ActionListener {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(74, Short.MAX_VALUE)
+                .addContainerGap(73, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtMa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -145,8 +152,10 @@ public class Edit extends javax.swing.JFrame implements ActionListener {
                     .addComponent(jLabel4)
                     .addComponent(txtQuequan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnEdit)
-                .addGap(11, 11, 11))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnDelete)
+                    .addComponent(btnEdit))
+                .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(96, 96, 96)
@@ -160,9 +169,9 @@ public class Edit extends javax.swing.JFrame implements ActionListener {
     /**
      * @param args the command line arguments
      */
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -179,25 +188,38 @@ public class Edit extends javax.swing.JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ae) {
+        Controller con = new Controller();
         try {
-            Controller con = new Controller();
-            
-            int ma =Integer.parseInt(txtMa.getText());                  
-            String ten = txtTen.getText();
-            String khoa = txtKhoa.getText();
-            String ngaysinh = txtNgaysinh.getText();
-            String quequan = txtQuequan.getText();
-            
-            Student s = new Student(ma,ten, khoa, ngaysinh, quequan);
-            if(con.getRmi().edit(s)){
-                JOptionPane.showMessageDialog(this, "chinh sua thanh cong");
-                main.loadTable(con.getRmi().getStudents(""));
-                this.dispose();
+            JButton btn = (JButton) ae.getSource();
+            if (btn.equals(btnEdit)) {
+                
+
+                int ma = Integer.parseInt(txtMa.getText());
+                String ten = txtTen.getText();
+                String khoa = txtKhoa.getText();
+                String ngaysinh = txtNgaysinh.getText();
+                String quequan = txtQuequan.getText();
+
+                Student s = new Student(ma, ten, khoa, ngaysinh, quequan);
+                if (con.getRmi().edit(s)) {
+                    JOptionPane.showMessageDialog(this, "chinh sua thanh cong");
+                    main.loadTable(con.getRmi().getStudents(""));
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "chinh sua that bai");
+                }
             }
-            else JOptionPane.showMessageDialog(this, "chinh sua that bai");
+            else{
+               if(con.getRmi().delete(Integer.parseInt(txtMa.getText()))){
+                   main.loadTable(con.getRmi().getStudents(""));
+                   JOptionPane.showMessageDialog(this, "xoa thanh cong");
+                   this.dispose();
+               }
+               else JOptionPane.showMessageDialog(this, "xoa that bai");
+            }
         } catch (RemoteException ex) {
             Logger.getLogger(Edit.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 }

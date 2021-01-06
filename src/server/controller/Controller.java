@@ -83,5 +83,35 @@ public class Controller extends  UnicastRemoteObject implements RmiInterface{
         }
         
     }
+
+    @Override
+    public boolean add(Student s) throws RemoteException {
+        try {
+            String sql ="insert into tbl_student(ten,khoa,ngaysinh,quequan) values(?,?,?,?)";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, s.getTen());
+            ps.setString(2, s.getKhoa());
+            ps.setString(3, s.getNgaysinh());
+            ps.setString(4, s.getQuequan());
+            ps.execute();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean delete(int ma) throws RemoteException {
+        try {
+            String sql = "delete from tbl_student where ma=" +ma;
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.execute();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
     
 }

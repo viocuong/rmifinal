@@ -14,4 +14,6 @@ import java.util.ArrayList;
 public interface RmiInterface extends  Remote {
     public ArrayList<Student> getStudents(String key) throws RemoteException;
     public boolean edit(Student s) throws RemoteException;
+    public boolean add(Student s) throws RemoteException;
+    public boolean delete(int ma) throws RemoteException;
 }
